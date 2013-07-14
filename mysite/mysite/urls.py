@@ -1,4 +1,7 @@
+# -*- coding: utf-8 -*-
 from django.conf.urls import patterns, include, url
+from sample_board import views
+
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -13,5 +16,7 @@ urlpatterns = patterns('',
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     # Uncomment the next line to enable the admin:
-    url(r'^admin/', include(admin.site.urls)),
+    # url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', views.home), # 여기에서 home 컨트롤러를 호출하게 맵핑해준다.
+
 )
