@@ -17,6 +17,7 @@
           <td width=320><p align=center>제목</p></td>
           <td width=100><p align=center>등록일</p></td>
           <td width=100><p align=center>조회수</p></td>
+          <td width=100><p align=center>추천수</p></td>
       </tr>
 
       {% if boardList %}
@@ -32,6 +33,7 @@
               </td>
               <td width=100><p align=center>{{ boardRow.created_date }}</p></td>
               <td width=100><p align=center>{{ boardRow.hits }}</p></td>
+              <td width=100><p align=center>{{ boardRow.likes }}</p></td>
               </tr>
               {% endfor %}
           </ul>
