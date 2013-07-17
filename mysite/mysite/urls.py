@@ -21,4 +21,5 @@ urlpatterns = patterns('',
     url(r'^show_write_form/$', views.show_write_form),
     url(r'^DoWriteBoard/$', views.DoWriteBoard),
     url(r'^listSpecificPageWork/$', views.listSpecificPageWork),
+    url(r'^viewWork/$', views.viewWork),
 )

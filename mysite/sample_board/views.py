@@ -51,8 +51,6 @@ def listSpecificPageWork(request):
 	print 'current_page=', current_page
 
 	# 페이지를 가지고 범위 데이터를 조사한다 -> raw SQL 사용함
-	#boardList = DjangoBoard.objects.raw('SELECT Z.* FROM(SELECT X.*, ceil( rownum / %s ) as page FROM ( SELECT ID, SUBJECT, NAME, CREATED_DATE, MAIL, MEMO, HITS, LIKES \
-	 #FROM SAMPLE_BOARD_DJANGOBOARD ORDER BY ID DESC) X ) Z WHERE page = %s',[rowsPerPage, current_page])
 	PageIndex = int(current_page)-1
 	start = int(rowsPerPage*PageIndex)
 	boardList = DjangoBoard.objects.raw('SELECT * FROM SAMPLE_BOARD_DJANGOBOARD ORDER BY ID DESC LIMIT %s, %s', [start, rowsPerPage])
@@ -68,3 +66,15 @@ def listSpecificPageWork(request):
 
 	return render_to_response('listSpecificPage.html', {'boardList':boardList, 'totalCnt':totalCnt,
 								'current_page':int(current_page), 'totalPageList':totalPageList})
+
+def viewWork(request):
+	pk = request.GET['memo_id']
+	boardData = DjangoBoard.objects.get(id=pk)
+
+	# 조회수를 늘린다
+	DjangoBoard.objects.filter(id=pk).update(hits = boardData.hits + 1)
+
+	return render_to_response('viewMemo.html',{'memo_id': request.GET['memo_id'],
+								'current_page': request.GET['current_page'],
+								'searchStr': request.GET['searchStr'],
+								'boardData': boardData})	
