@@ -1,3 +1,7 @@
+ {% comment %}
+  totalCnt: <strong>{{ totalCnt }}</strong> current_page: <strong>{{ pageForView }}</strong> boardList: <strong>{{ boardList|length }}</strong>
+  {% endcomment %}
+
 <table cellspacing = 1 width = 700 border = 0>
 	<tr>
 		<td>총 게시물수: {{totalCnt}}</td>
@@ -15,9 +19,9 @@
 		<td width=100><p align=center>추천수</p></td>
 	</tr>
 
-		{% if boardList %}
+	{% if boardList %}
 		<ul>
-			{% for boardRow in BoardList %}
+			{% for boardRow in boardList %}
 			<tr>
 				<td width=50><p align=center>{{boardRow.id}}</p></td>
 				<td width=100><p align=center>{{boardRow.name}}</p></td>

@@ -16,7 +16,7 @@ urlpatterns = patterns('',
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     # Uncomment the next line to enable the admin:
-    # url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', include(admin.site.urls)),
     url(r'^$', views.home), # 여기에서 home 컨트롤러를 호출하게 맵핑해준다.
     url(r'^show_write_form/$', views.show_write_form),
     url(r'^DoWriteBoard/$', views.DoWriteBoard),

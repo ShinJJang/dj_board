@@ -5,9 +5,10 @@ from sample_board.models import DjangoBoard
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponseRedirect
 from sample_board.pagingHelper import pagingHelper
+from .forms import UploadFileForm
 
 #한글!!
-rowsPerPage = 2
+rowsPerPage = 3
 
 def home(request):
 	boardList = DjangoBoard.objects.order_by('-id')[0:rowsPerPage]
@@ -16,7 +17,7 @@ def home(request):
 	# model을 사용해서 전체 데이터 갯수를 구한다.
 	totalCnt = DjangoBoard.objects.all().count()
 
-	# 이것은 페이징 처리를 위해 생성한 간단한 헬퍼 클래스이다.
+	# 이것은 페이징 처리를 위해 생성한 간단한 헬퍼 클래스이다. 
 	pagingHelperIns = pagingHelper();
 	totalPageList = pagingHelperIns.getTotalPageList(totalCnt, rowsPerPage)
 	print 'totalPageList', totalPageList
@@ -91,7 +92,7 @@ def listSearchedSpecificPageWork(request):
 	PageIndex = int(pageForView)-1
 	start = int(rowsPerPage*PageIndex)
 
-	boardList = DjangoBoard.objects.raw('SELECT X.* FROM (SELECT * FROM SAMPLE_BOARD_DJANGOBOARD WHERE SUBJECT LIKE \'a\' ) X ORDER BY ID DESC LIMIT %s, %s', [start, rowsPerPage])
+	boardList = DjangoBoard.objects.raw('SELECT X.* FROM ( SELECT * FROM SAMPLE_BOARD_DJANGOBOARD WHERE SUBJECT LIKE %s) X ORDER BY ID DESC LIMIT %s, %s', [searchStr, start, rowsPerPage])
 
 	return render_to_response('listSearchedSpecificPage.html', {'boardList': boardList, 'totalCnt': totalCnt,
 								'pageForView': int(pageForView), 'searchStr': searchStr, 'totalPageList': totalPageList})
@@ -151,3 +152,13 @@ def searchWithSubject(request):
 
 	url = '/listSearchedSpecificPageWork?searchStr=' + searchStr + '&pageForView=1'
 	return HttpResponseRedirect(url)
+
+def upload_file(request):
+	if request.method == 'POST':
+		form = UploadFileForm(request.Post, request.FILES)
+		if form.is_valid():
+			handle_uploaded_file(request.FILES['file'])
+			return HttpResponseRedirect('/success/url')
+	else:
+		form = UploadFileForm()
+	return render_to_response('upload.html', {'form': form})
