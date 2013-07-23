@@ -35,7 +35,7 @@
 </script>
 
 <table cellspacing=0 cellpadding=5 border=1 width=500>
-	<form name=modifyform method=post action="/updateBoard/">
+	<form name=modifyform method=post action="/updateBoard/" enctype="multipart/form-data">
 		<input type=hidden name=memo_id value="{{memo_id}}">
 		<input type=hidden name=current_page value="{{current_page}}">
 		<input type=hidden name=searchStr value="{{searchStr}}">
@@ -44,6 +44,13 @@
 		<tr><td><b>이메일</b></td><td><input type=text name=mail size=50 maxlength=50 value="{{boardData.mail}}"></td></tr>
 		<tr><td><b>제목</b></td><td><input type=text name=subject size=50 maxlength=50 value="{{boardData.subject}}"></textarea></td></tr>
 		<tr><td><b>내용</b></td><td><textarea name=memo clos=50 rows=10>{{boardData.memo}}</textarea></td></tr>
+		<tr><td><b>첨부파일</b></td><td> 
+		{% if boardData.file_1 %}
+			<input type=file name=file size=50 maxlength=50 >
+		{%else%}
+			<input type=file name=file size=50 maxlength=50>
+		{% endif %}
+		</td></tr>
 	</form>
 </table>
 

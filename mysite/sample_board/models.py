@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.db import models
 
 class DjangoBoard(models.Model):
@@ -8,3 +9,4 @@ class DjangoBoard(models.Model):
 	memo = models.CharField(max_length=200, blank=True)
 	hits = models.IntegerField(null=True, blank=True)
 	likes = models.IntegerField(null=True, blank=True)
+	file_1 = models.FileField(upload_to = 'upload/%y/%m/%d')

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 class pagingHelper:
 	"paging helper class"
 	def getTotalPageList(self, total_cnt, rowsPerPage):

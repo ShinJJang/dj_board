@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import render_to_response
+from django.shortcuts import redirect
 from django.utils import timezone
 from sample_board.models import DjangoBoard
 from django.views.decorators.csrf import csrf_exempt
@@ -30,19 +31,28 @@ def show_write_form(request):
 
 @csrf_exempt
 def DoWriteBoard(request):
-	br = DjangoBoard (subject = request.POST['subject'],
+	# Handle file upload
+	if request.method == 'POST' :
+		form = UploadFileForm(request.POST, request.FILES)
+		if form.is_valid() :
+			br = DjangoBoard (subject = request.POST['subject'],
 				name = request.POST['name'],
 				mail = request.POST['mail'],
 				memo = request.POST['memo'],
 				created_date = timezone.now(),
 				hits = 0,
-				likes = 0
+				likes = 0,
+				file_1 = request.FILES['file']
 				)
-	br.save()
+			br.save()
 
-	# 저장을 했으니, 다시 조회해서 보여준다.
-	url = '/listSpecificPageWork?current_page=1'
-	return HttpResponseRedirect(url)
+			# Redirect to the board list after POST
+			url = '/listSpecificPageWork?current_page=1'
+			return HttpResponseRedirect(url)
+		else :
+			form = UploadFileForm # A empty, unbound form
+	
+	return redirect('/fail/')
 
 
 def listSpecificPageWork(request):
@@ -112,14 +122,19 @@ def updateBoard(request):
 	memo_id = request.POST['memo_id']
 	current_page = request.POST['current_page']
 	searchStr = request.POST['searchStr']
-
-	DjangoBoard.objects.filter(id=memo_id).update(
-								mail=request.POST['mail'],
-								subject=request.POST['subject'],
-								memo=request.POST['memo'])
-	# Display Page => POST 요청은 redirection으로 처리
-	url = '/listSpecificPageWork?current_page=' + str(current_page)
-	return HttpResponseRedirect(url)
+	if request.method == 'POST' :
+		form = UploadFileForm(request.POST, request.FILES)
+		if form.is_valid() :
+			DjangoBoard.objects.filter(id=memo_id).update(mail=request.POST['mail'],
+									subject=request.POST['subject'],
+									memo=request.POST['memo'],
+									file_1=request.FILES['file'])
+			# Display Page => POST 요청은 redirection으로 처리
+			url = '/listSpecificPageWork?current_page=' + str(current_page)
+			return HttpResponseRedirect(url)
+		else :
+			form = UploadFileForm # A empty, unbound form
+	return redirect('/fail/')
 
 def DeleteSpecificRow(request):
 	memo_id = request.GET['memo_id']
@@ -152,13 +167,3 @@ def searchWithSubject(request):
 
 	url = '/listSearchedSpecificPageWork?searchStr=' + searchStr + '&pageForView=1'
 	return HttpResponseRedirect(url)
-
-def upload_file(request):
-	if request.method == 'POST':
-		form = UploadFileForm(request.Post, request.FILES)
-		if form.is_valid():
-			handle_uploaded_file(request.FILES['file'])
-			return HttpResponseRedirect('/success/url')
-	else:
-		form = UploadFileForm()
-	return render_to_response('upload.html', {'form': form})

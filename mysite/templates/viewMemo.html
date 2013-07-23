@@ -31,6 +31,13 @@
 	<tr><td><b>이메일</b></td><td> {{boardData.mail}} </td></tr>
 	<tr><td><b>제목</b></td><td> {{boardData.subject}} </td></tr>
 	<tr><td><b>내용</b></td><td> {{boardData.memo}} </td></tr>
+	<tr><td><b>첨부파일</b></td><td> <li>
+		{% if boardData.file_1 %}
+			<a href ="{{boardData.file_1.url}}"> {{boardData.file_1.name}}</a>
+		{%else%}
+			<p>No Data.</p>
+		{% endif %}
+		</li> </td></tr>
 </table>
 
 <table celspaceing = 0 cellpadding = 0 border = 0 width = 500>
