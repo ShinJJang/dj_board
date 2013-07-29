@@ -9,4 +9,8 @@ class DjangoBoard(models.Model):
 	memo = models.CharField(max_length=200, blank=True)
 	hits = models.IntegerField(null=True, blank=True)
 	likes = models.IntegerField(null=True, blank=True)
-	file_1 = models.FileField(upload_to = 'upload/%y/%m/%d')
+	file_1 = models.FileField(null=True, upload_to = 'upload/%y/%m/%d')
+	file_2 = models.FileField(null=True, upload_to = 'upload/%y/%m/%d')
+
+class Settings(models.Model):
+	rowsPerPage = models.IntegerField(null=True, blank=True)

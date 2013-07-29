@@ -42,7 +42,8 @@ def DoWriteBoard(request):
 				created_date = timezone.now(),
 				hits = 0,
 				likes = 0,
-				file_1 = request.FILES['file']
+				file_1 = request.FILES['file_1'],
+				file_2 = request.FILES['file_2']
 				)
 			br.save()
 
@@ -122,19 +123,24 @@ def updateBoard(request):
 	memo_id = request.POST['memo_id']
 	current_page = request.POST['current_page']
 	searchStr = request.POST['searchStr']
-	if request.method == 'POST' :
-		form = UploadFileForm(request.POST, request.FILES)
-		if form.is_valid() :
-			DjangoBoard.objects.filter(id=memo_id).update(mail=request.POST['mail'],
-									subject=request.POST['subject'],
-									memo=request.POST['memo'],
-									file_1=request.FILES['file'])
-			# Display Page => POST 요청은 redirection으로 처리
-			url = '/listSpecificPageWork?current_page=' + str(current_page)
-			return HttpResponseRedirect(url)
-		else :
-			form = UploadFileForm # A empty, unbound form
-	return redirect('/fail/')
+	
+	br = DjangoBoard.objects.get(id=memo_id)
+	br.mail = request.POST['mail']
+	br.subject = request.POST['subject']
+	br.memo = request.POST['memo']
+
+	if request.FILES.get('file_1'):	
+		br.file_1 = request.FILES['file_1']
+
+	if request.FILES.get('file_2'):	
+		br.file_2 = request.FILES['file_2']
+
+	br.save()
+
+	# Display Page => POST 요청은 redirection으로 처리
+	url = '/listSpecificPageWork?current_page=' + str(current_page)
+	return HttpResponseRedirect(url)
+
 
 def DeleteSpecificRow(request):
 	memo_id = request.GET['memo_id']
@@ -166,4 +172,11 @@ def searchWithSubject(request):
 	print 'searchStr', searchStr
 
 	url = '/listSearchedSpecificPageWork?searchStr=' + searchStr + '&pageForView=1'
+	return HttpResponseRedirect(url)
+
+@csrf_exempt
+def rowmodify(request):
+	rowsPerPage = request.POST['rowsPerPage']
+
+	url = '/listSpecificPageWork?current_page=' + str(rowsPerPage)
 	return HttpResponseRedirect(url)

@@ -30,4 +30,5 @@ urlpatterns = patterns('',
     url(r'^searchWithSubject/$', views.searchWithSubject),
    # url(r'^', + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)),
     url(r'^upload/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
+    url(r'^rowmodify/$', views.rowmodify),
 )
