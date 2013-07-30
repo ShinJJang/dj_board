@@ -41,10 +41,13 @@ def DoWriteBoard(request):
 				memo = request.POST['memo'],
 				created_date = timezone.now(),
 				hits = 0,
-				likes = 0,
-				file_1 = request.FILES['file_1'],
-				file_2 = request.FILES['file_2']
+				likes = 0
 				)
+			if request.FILES.get('file_1'):
+				file_1 = request.FILES['file_1']
+				
+			if request.FILES.get('file_2'):
+				file_2 = request.FILES['file_2']
 			br.save()
 
 			# Redirect to the board list after POST
