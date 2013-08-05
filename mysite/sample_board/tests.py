@@ -7,8 +7,9 @@ Replace this with more appropriate tests for your application.
 
 from django.test import TestCase
 from django.utils import timezone
-from sample_board.models import DjangoBoard
-from .forms import UploadFileForm
+from .models import DjangoBoard
+from django.conf import settings
+from django.utils.importlib import import_module
 
 class SimpleTest(TestCase):
     def test_basic_addition(self):
@@ -52,20 +53,20 @@ class BoardAdminTestCase(TestCase):
 class ListSpecificPageTestCase(TestCase):
     def test_index(self):
         # home
-        resp = self.client.post('')
+        resp = self.client.get('')
         self.assertEqual(resp.status_code, 200)
 
         # home two
-        resp = self.client.post('/')
+        resp = self.client.get('/')
         self.assertEqual(resp.status_code, 200)
         self.assertTrue('boardList' in resp.context)
 
         # request nope
-        resp = self.client.post('/listSpecificPageWork')
+        resp = self.client.get('/listSpecificPageWork')
         self.assertEqual(resp.status_code, 301)
 
         # page 1
-        resp = self.client.post('/listSpecificPageWork/?current_page=1')
+        resp = self.client.get('/listSpecificPageWork/?current_page=1')
         self.assertEqual(resp.status_code, 200)
         self.assertTrue('boardList' in resp.context)
 
@@ -97,12 +98,12 @@ class writeBoardTestCase(TestCase):
 class ViewMemoTestCase(TestCase):
     def test_index(self):
         # Ensure a non-existant memo_id throw a Not Found(404).
-        resp = self.client.post('/viewWork/memo_id=1&current_page=1&searchStr=None')
+        resp = self.client.get('/viewWork/memo_id=1&current_page=1&searchStr=None')
         self.assertEqual(resp.status_code, 404)
 
 class FileTestCase(TestCase):
     def test_index(self):
-        resp = self.client.post('/upload')
+        resp = self.client.get('/upload')
         self.assertEqual(resp.status_code, 301)
 
 # modify memo page test
@@ -117,8 +118,12 @@ class modifyMemoTestCase(TestCase):
                 likes = 0
                 )
         self.assertEqual(DjangoBoard.objects.all().count(), 1)
-        resp = self.client.post('/listSpecificPageWork_to_update')
+        resp = self.client.get('/listSpecificPageWork_to_update')
         self.assertEqual(resp.status_code, 301)
+        self.assertEqual(resp['Location'], 'http://testserver/listSpecificPageWork_to_update/')
+
+        resp = self.client.get('/listSpecificPageWork_to_update/?memo_id=%s&current_page=1&searchStr=None' % br.id)
+        self.assertEqual(resp.status_code, 200)
 
         resp = self.client.post('/updateBoard/', {'memo_id':br.id,'current_page':1,'searchStr':'','name':'Name','mail':'Mail','subject':'Subject_modify','memo':'Memo'})
         self.assertEqual(resp.status_code, 302)
@@ -136,12 +141,11 @@ class deleteMemoTestCase(TestCase):
                 hits = 0,
                 likes = 0
                 )
-        self.assertEqual(br.id, 2L)
         self.assertEqual(DjangoBoard.objects.all().count(), 1)
         resp = self.client.post('/DeleteSpecificRow')
         self.assertEqual(resp.status_code, 301)
 
-        resp = self.client.post('/DeleteSpecificRow/?memo_id=2&current_page=1')
+        resp = self.client.get('/DeleteSpecificRow/?memo_id=%s&current_page=1' % br.id)
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(resp['Location'], 'http://testserver/listSpecificPageWork?current_page=0') 
         self.assertEqual(DjangoBoard.objects.all().count(), 0)
@@ -155,4 +159,3 @@ class SearchMemoTestCase(TestCase):
         # non-data must be missing
         resp = self.client.post('/searchWithSubject/', {'searchStr':'df', 'pageForView':1})
         self.assertEqual(resp.status_code, 302)
-
