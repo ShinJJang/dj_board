@@ -47,8 +47,8 @@ class ResponseTestCase(TestCase):
         self.assertEqual(response_post.status_code, 200)
 
     def test_http_header(self):
-        response = self.client.get('/') # TODO. need to setting url
+        response = self.client.get('/') # TODO. need to setting url after redirect to check Location
         expected_redirect_url = 'http://testserver/' # default test url
 
-        # When redirect, Location can be accessed
+        # Location, read-only header represents the URL the response will redirect to.
         self.assertEqual(response['Location'], expected_redirect_url)
