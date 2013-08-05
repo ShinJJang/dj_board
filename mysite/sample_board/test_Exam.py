@@ -1,4 +1,26 @@
 __author__ = 'Shin'
+"""
+This is Django unit test example code.
+
+Django unit test run with command,
+
+    "manage.py test target_app_name"
+
+    if you want test all app, let target_app_name blank
+
+    "manage.py test"
+
+and then coverage run, report with command,
+
+    "python -m coverage run --source='.' manage.py test target_app_name"
+
+    "python -m coverage report"
+
+reference : https://docs.djangoproject.com/en/1.4/topics/testing/
+            https://docs.djangoproject.com/en/1.5/topics/testing/advanced/#integration-with-coverage-py
+            http://toastdriven.com/blog/2011/apr/10/guide-to-testing-in-django/
+            http://toastdriven.com/blog/2011/apr/17/guide-to-testing-in-django-2/
+"""
 
 from django.test import TestCase
 from django.conf import settings
@@ -47,8 +69,10 @@ class ResponseTestCase(TestCase):
         self.assertEqual(response_post.status_code, 200)
 
     def test_http_header(self):
-        response = self.client.get('/') # TODO. need to setting url after redirect to check Location
-        expected_redirect_url = 'http://testserver/' # default test url
+        url = '/listSpecificPageWork?current_page=1'
+        response = self.client.post('/rowmodify/', {'rowsPerPage':'1'}) # TODO. need to setting url after redirect to check Location
+        # default test url 'http://testserver/'
+        expected_redirect_url = 'http://testserver/listSpecificPageWork?current_page=1' # TODO. setting redirect url
 
         # Location, read-only header represents the URL the response will redirect to.
         self.assertEqual(response['Location'], expected_redirect_url)
