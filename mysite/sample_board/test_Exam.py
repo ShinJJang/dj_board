@@ -27,6 +27,16 @@ from django.conf import settings
 from django.utils.importlib import import_module
 
 class SessionAndCookieTestCase(TestCase):
+    # suppose url(r'^post_comment/$', views.post_comment)
+    """
+    def post_comment(request, new_comment):
+        if request.session.get('has_commented', False):
+            return HttpResponse("You've already commented.")
+        c = comments.Comment(comment=new_comment)
+        c.save()
+        request.session['has_commented'] = True
+        return HttpResponse('Thanks for your comment!')
+    """
     def test_session_and_cookie(self):
         # not yet find way that check session and cookie in response
         # TODO. FYI Visit http://code.djangoproject.com/ticket/10899
@@ -35,13 +45,20 @@ class SessionAndCookieTestCase(TestCase):
         store.save()
         self.client.cookies[settings.SESSION_COOKIE_NAME] = store.session_key
         session = self.client.session
-        session.update({'key':'value', 'sns':'good'})
+        session.update({'key':'value', 'sns':'good', 'has_commented':False})
         session.save()
 
         self.assertEqual(session['key'], 'value')
         self.assertEqual(session['sns'], 'good')
 
-        response = self.client.post('/')
+        response = self.client.post('/post_comment/', {'comment':'comment'})
+        # post comment success
+        self.assertEqual(response.staus_code, 200)
+
+        response = self.client.post('/post_comment/', {'comment':'comment'})
+        # already commented. session have 'has_commented':True.
+        self.assertEqual(response.status_code, 401)
+
 
         # session_key_resp is None. this not working
         session_key_resp = response.cookies.get(settings.SESSION_COOKIE_NAME)
